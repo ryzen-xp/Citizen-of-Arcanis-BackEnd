@@ -23,5 +23,5 @@ impl MercenaryWorldImpl of MercenaryWorldTrait {
         mercenary
     }
 
-
+    
 }
