@@ -17,9 +17,12 @@ mod components {
     mod rareItem;
 }
 
-
-
-// mod models;
+mod models {
+    mod models;
+    mod role;
+    mod mission;
+    mod npc;
+}
 
 mod tests {
     mod test_rare_item;
