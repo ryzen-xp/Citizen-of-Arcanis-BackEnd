@@ -1,9 +1,9 @@
-use starknet::ContractAddress;
+use core::starknet::{ContractAddress, get_caller_address};
 use dojo_starter::{components::{mercenary::{Mercenary,MercenaryTrait},world::World,utils::{uuid, RandomTrait}}};
 use dojo::model::{ModelStorage, ModelValueStorage};
 use dojo_starter::{
     components::{
-        rareItem::{rareItem , m_RareItem,RareItemSource }, //here import other components you need
+        rareItem::{rareItem ,item ,RareItemSource }, //here import other components you need
     }
 };
 
@@ -13,11 +13,12 @@ use dojo_starter::{
 impl rareItemImpl of rareItemTrait {
 fn register_rare_item(
     ref self: World, 
-    player: ContractAddress, 
+    
     item_id: u128, 
     source: RareItemSource
 ) -> rareItem {
-    // Read the existing RareItem associated with the player
+    let player  = get_caller_address();
+   
     let mut existing: rareItem = self.read_model(player);
     
     // Check if the item_id already exists for this player
@@ -28,16 +29,16 @@ fn register_rare_item(
     // Create a new item
     let new_item = item{
         item_id,
-        source,
+        item_source :source,
     };
     
-    // Update the items vector for the player
+
     existing.items.push(new_item);
 
-    // Write the updated RareItem model back to the World
+
     self.write_model(existing);
 
-    // Return the updated RareItem
+
     existing
 }
 }

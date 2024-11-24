@@ -3,7 +3,7 @@ mod tests {
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
     use dojo_cairo_test::{spawn_test_world, NamespaceDef, TestResource};
     use dojo_starter::{
-        systems::{mercenary::{MercenaryWorldTrait
+        systems::{rareItem::{rareItemTrait
           //if you change it properly to components, the must be add below rareItem::{RareItemSource} 
         }},
     };
@@ -33,12 +33,13 @@ mod tests {
         let item_id: u128 = 12345;
         let source = RareItemSource::Mission;
 
-        let rare_item = MercenaryWorldTrait::register_rare_item(ref world, player, item_id, source);
+        let rare_item = rareItemTrait::register_rare_item(ref world, item_id, source);
 
         // Verify the registered rare item
-        assert_eq!(rare_item.item_id, item_id, "Item ID is incorrect");
+
+        assert_eq!(rare_item.items.item_id, item_id, "Item ID is incorrect");
         assert_eq!(rare_item.player, player, "Player address is incorrect");
-        assert_eq!(rare_item.source, source, "Source of the rare item is incorrect");
+        assert_eq!(rare_item.items.item_source, source, "Source of the rare item is incorrect");
 
         // Try to register the same rare item again
         let duplicate_item_result = std::panic::catch_unwind(|| {

@@ -1,6 +1,7 @@
 mod systems {
     // mod actions;
     mod mercenary;
+    mod rareItem;
 }
 
 mod contracts {
