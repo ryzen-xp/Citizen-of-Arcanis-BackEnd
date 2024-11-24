@@ -14,12 +14,13 @@ mod components {
     mod armour;
     mod world;
     mod utils;
+    mod rareItem;
 }
 
 
 
 // mod models;
 
-// mod tests {
-//     mod test_world;
-// }
+mod tests {
+    mod test_rare_item;
+}
