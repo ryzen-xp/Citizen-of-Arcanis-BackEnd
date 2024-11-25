@@ -1,21 +1,14 @@
-use starknet::ContractAddress;
+use core::starknet::{ContractAddress, get_caller_address};
 use starknet::storage::{
     StoragePointerReadAccess, StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait, Map,
 };
-use core::traits::TryInto;
-use core::traits::Into;
+
 use core::debug::PrintTrait;
 use core::array::ArrayTrait;
-use core::Zeroable;
-const MAX_INVENTORY_CAPACITY: usize = 10;
 
-// #[storage]
-// struct Storage {
-//    pub rare_items: Map<ContractAddress, Vec<rareItem>>,
-// }
+const MAX_RARE_Items_CAPACITY: usize = 10;
 
-
-#[derive(Drop, Serde, Clone)]
+#[derive(Serde, Copy, Drop)]
 #[dojo::model]
 pub struct rare_items{
     #[key]              
@@ -57,7 +50,7 @@ impl rare_itemsImpl of rare_itemsTrait {
         rare_items { 
             player,
             items: ArrayTrait::new(),
-            max_capacity: MAX_INVENTORY_CAPACITY,
+            max_capacity: MAX_RARE_Items_CAPACITY,
            
         }
     }
@@ -88,15 +81,15 @@ impl rare_itemsImpl of rare_itemsTrait {
         true
     }
 
-    // Is full
-    fn is_full(self: @rare_items) -> bool {
-        self.items.len() >= *self.max_capacity
-    }
+    // // Is full
+    // fn is_full(self: @rare_items) -> bool {
+    //     self.items.len() >= *self.max_capacity
+    // }
 
-    // Current capacity
-    fn available_space(self: @rare_items) -> usize {
-        *self.max_capacity - self.items.len()
-    }
+    // // Current capacity
+    // fn available_space(self: @rare_items) -> usize {
+    //     *self.max_capacity - self.items.len()
+    // }
 
     // Remove item
     // fn remove_item(ref self: rare_items, item_id: u128) -> bool {

@@ -1,52 +1,71 @@
 #[cfg(test)]
 mod tests {
+  
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
     use dojo_cairo_test::{spawn_test_world, NamespaceDef, TestResource};
     use dojo_starter::{
-        systems::{rareItem::{rareItemTrait
-          //if you change it properly to components, the must be add below rareItem::{RareItemSource} 
-        }},
-    };
-    use dojo_starter::{
         components::{
-            rareItem::{rareItem , m_RareItem,RareItemSource }, //here import other components you need
-        }
+          
+            world::World,
+            utils::{uuid, RandomTrait},
+            rareItem::{rareItem, RareItemSource, rare_items ,rare_itemsTrait, rare_itemsImpl ,rareItemImpl ,rareItemTrait,},
+        },
+        systems::rareItem::{rareItem_managmentTrait , rareItem_managmentImpl},
     };
+    
+
     fn namespace_def() -> NamespaceDef {
         let ndef = NamespaceDef {
-            namespace: "dojo_starter", resources: [
-                TestResource::Model(m_RareItem::TEST_CLASS_HASH.try_into().unwrap()),
-            ].span()
+            namespace: "dojo_starter",
+            resources: [
+                TestResource::Model(rare_items::TEST_CLASS_HASH.try_into().unwrap()),
+            ]
+            .span(),
         };
 
         ndef
     }
+
     #[test]
     fn test_rare_item_registration() {
-       
-         // Initialize test environment
-         let player = starknet::contract_address_const::<0x07dc7899aa655b0aae51eadff6d801a58e97dd99cf4666ee59e704249e51adf2>();//test address
-         let ndef = namespace_def();
-         let mut world = spawn_test_world([ndef].span());
+        // Initialize test environment
+        let player = starknet::contract_address_const::<0x07dc7899aa655b0aae51eadff6d801a58e97dd99cf4666ee59e704249e51adf2>(); // Test address
+        let ndef = namespace_def();
+        let mut world = spawn_test_world([ndef].span());
 
         // Data for the rare item
-        let item_id: u128 = 12345;
+        let id: u128 = 12345;
         let source = RareItemSource::Mission;
 
-        let rare_item = rareItemTrait::register_rare_item(ref world, item_id, source);
+        // Register the rare item
+        let rare_item = rareItem_managmentTrait::register_rare_item(ref world, id, source);
 
         // Verify the registered rare item
+        assert_eq!(rare_item.player, player, "player address mismatch");
 
-        assert_eq!(rare_item.items.item_id, item_id, "Item ID is incorrect");
-        assert_eq!(rare_item.player, player, "Player address is incorrect");
-        assert_eq!(rare_item.items.item_source, source, "Source of the rare item is incorrect");
+          // Check if the item already exists
+          let mut found_item_id = false ;
+          let mut  found_source = false ;
+          for i in 0..rare_item.items.len() {
+            if rare_item.items[i].item_id == @id {
+                found_item_id =  true; 
+                if rare_item.items[i].item_source == @source{
+                    found_source = true ;
+                }
+                break;
+            }
+           };
+        assert(found_item_id, " item_id  not match");
+        assert(found_source, " item source not match");
 
-        // Try to register the same rare item again
-        let duplicate_item_result = std::panic::catch_unwind(|| {
-            MercenaryWorldTrait::register_rare_item(ref world, player, item_id, source);
+        // Check if the item is added to the player's inventory
+        let player_items = rare_itemsTrait::new(player);
+        assert_eq!(player_items.player , player, "player address not match");
+
+        // Try to register the same rare item again (expect a panic)
+        let result = std::panic::catch_unwind(|| {
+            rareItem_managmentTrait::register_rare_item(ref world, item_id, source);
         });
-
-
-        assert!(duplicate_item_result.is_err(), "Duplicate item registration did not panic as expected");
+        assert!(result.is_err(), "Duplicate item registration did not panic as expected");
     }
 }
