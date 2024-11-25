@@ -18,7 +18,7 @@ use dojo::model::{ModelStorage, ModelValueStorage};
 impl rareItem_managmentImpl of rareItem_managmentTrait {
     fn register_rare_item(
         ref self: World,
-        item_id: u128,
+        item_id: u32,
         source: RareItemSource,
     ) -> rare_items {
         let player = get_caller_address();

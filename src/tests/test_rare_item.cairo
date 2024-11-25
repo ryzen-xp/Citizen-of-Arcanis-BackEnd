@@ -34,7 +34,7 @@ mod tests {
         let mut world = spawn_test_world([ndef].span());
 
         // Data for the rare item
-        let id: u128 = 12345;
+        let id: u32 = 12345;
         let source = RareItemSource::Mission;
 
         // Register the rare item

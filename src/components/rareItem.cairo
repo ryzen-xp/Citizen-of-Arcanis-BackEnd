@@ -20,7 +20,7 @@ pub struct rare_items{
 
 #[derive(Serde, Copy, Drop)]
 pub struct rareItem {
-    pub item_id: u128,
+    pub item_id: u32,
     pub item_source: RareItemSource,
 }
 
@@ -32,7 +32,7 @@ pub enum RareItemSource {
 
 #[generate_trait]
 impl rareItemImpl of rareItemTrait {
-    fn new(item_id: u128,item_source : RareItemSource) -> rareItem {
+    fn new(item_id: u32,item_source : RareItemSource) -> rareItem {
         rareItem {
             item_id,
             item_source,
@@ -55,7 +55,7 @@ impl rare_itemsImpl of rare_itemsTrait {
         }
     }
 
-    fn has_available_item(self: rare_items, item_id: u128) -> bool {
+    fn has_available_item(self: rare_items, item_id: u32) -> bool {
       
       
         let mut found = false;
