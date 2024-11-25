@@ -2,10 +2,27 @@ use starknet::ContractAddress;
 use starknet::storage::{
     StoragePointerReadAccess, StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait, Map,
 };
+use core::traits::TryInto;
+use core::traits::Into;
+use core::debug::PrintTrait;
+use core::array::ArrayTrait;
+use core::Zeroable;
+const MAX_INVENTORY_CAPACITY: usize = 10;
 
-#[storage]
-struct Storage {
-   pub rare_items: Map<ContractAddress, Vec<rareItem>>,
+// #[storage]
+// struct Storage {
+//    pub rare_items: Map<ContractAddress, Vec<rareItem>>,
+// }
+
+
+#[derive(Drop, Serde, Clone)]
+#[dojo::model]
+pub struct rare_items{
+    #[key]              
+    pub player : ContractAddress,
+    pub items: Array<rareItem>,  
+    pub max_capacity: usize, 
+  
 }
 
 #[derive(Serde, Copy, Drop)]
@@ -20,8 +37,94 @@ pub enum RareItemSource {
     Enemy,
 }
 
-// Function to check if a player has a specific item
-// fn has_item(player: ContractAddress, item_id: u128) -> bool {
-//     let player_items = self.storage().rare_items.get(player);
-//     player_items.iter().any(|item| item.item_id == item_id)
-// }
+#[generate_trait]
+impl rareItemImpl of rareItemTrait {
+    fn new(item_id: u128,item_source : RareItemSource) -> rareItem {
+        rareItem {
+            item_id,
+            item_source,
+        }
+    }
+
+   
+}
+
+#[generate_trait]
+impl rare_itemsImpl of rare_itemsTrait {
+
+    // New rare_items
+    fn new(player : ContractAddress) -> rare_items {
+        rare_items { 
+            player,
+            items: ArrayTrait::new(),
+            max_capacity: MAX_INVENTORY_CAPACITY,
+           
+        }
+    }
+
+    fn has_available_item(self: rare_items, item_id: u128) -> bool {
+      
+      
+        let mut found = false;
+        // Check if the item already exists
+        for i in 0..self.items.len() {
+            if self.items[i].item_id == @item_id {
+                found =  true; 
+                break;
+            }
+        };
+        return found ;
+    }
+
+    // New item
+    fn add_rare_item(ref self: rare_items, rareItem: rareItem) -> bool {
+        // validate space
+        if self.items.len() >= self.max_capacity {
+            return false;
+        }
+
+        // Add item
+        self.items.append(rareItem);
+        true
+    }
+
+    // Is full
+    fn is_full(self: @rare_items) -> bool {
+        self.items.len() >= *self.max_capacity
+    }
+
+    // Current capacity
+    fn available_space(self: @rare_items) -> usize {
+        *self.max_capacity - self.items.len()
+    }
+
+    // Remove item
+    // fn remove_item(ref self: rare_items, item_id: u128) -> bool {
+    //     let mut found = false;
+    //     let mut new_items = ArrayTrait::new();
+    //     let mut i = 0;
+
+    //     loop {
+    //         if i >= self.items.len() {
+    //             break;
+    //         }
+
+    //         let current_item = self.items.at(i); 
+
+    //         if current_item.item_id != @item_id || found {
+    //             new_items.append(current_item.clone());  
+    //         } else {
+    //             found = true;  
+    //         }
+
+    //         i += 1;
+    //     };
+
+    //     if found {
+    //         self.items = new_items;
+    //     }
+
+    //     found
+    // }
+
+}
