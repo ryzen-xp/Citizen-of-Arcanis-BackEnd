@@ -1,33 +1,27 @@
 use starknet::ContractAddress;
+use starknet::storage::{
+    StoragePointerReadAccess, StoragePointerWriteAccess, Vec, VecTrait, MutableVecTrait, Map,
+};
 
-#[derive(Serde, Copy, Drop, Introspect)]
+#[storage]
+struct Storage {
+   pub rare_items: Map<ContractAddress, Vec<rareItem>>,
+}
+
+#[derive(Serde, Copy, Drop)]
 pub struct rareItem {
-    #[key]
-    pub player: ContractAddress, 
-    pub items: Vec<item>,
-}
-
-#[derive(Serde, Copy, Drop, Introspect)]
-pub struct item {
     pub item_id: u128,
-    pub item_source: RareItemSource, 
+    pub item_source: RareItemSource,
 }
 
-#[derive(Serde, Copy, Drop, Introspect)]
+#[derive(Serde, Copy, Drop)]
 pub enum RareItemSource {
-    Mission, 
-    Enemy, 
+    Mission,
+    Enemy,
 }
 
-// Define the trait
-// pub trait IsPresent {
-//     fn is_present(&self, item_id: u128) -> bool;
+// Function to check if a player has a specific item
+// fn has_item(player: ContractAddress, item_id: u128) -> bool {
+//     let player_items = self.storage().rare_items.get(player);
+//     player_items.iter().any(|item| item.item_id == item_id)
 // }
-
-// Implement the trait for rareItem
-// impl IsPresent for rareItem {
-//     fn is_present(&self, item_id: u128) -> bool {
-//         self.items.iter().any(|itm| itm.item_id == item_id)
-//     }
-// }
-
