@@ -81,43 +81,4 @@ impl rare_itemsImpl of rare_itemsTrait {
         true
     }
 
-    // // Is full
-    // fn is_full(self: @rare_items) -> bool {
-    //     self.items.len() >= *self.max_capacity
-    // }
-
-    // // Current capacity
-    // fn available_space(self: @rare_items) -> usize {
-    //     *self.max_capacity - self.items.len()
-    // }
-
-    // Remove item
-    // fn remove_item(ref self: rare_items, item_id: u128) -> bool {
-    //     let mut found = false;
-    //     let mut new_items = ArrayTrait::new();
-    //     let mut i = 0;
-
-    //     loop {
-    //         if i >= self.items.len() {
-    //             break;
-    //         }
-
-    //         let current_item = self.items.at(i); 
-
-    //         if current_item.item_id != @item_id || found {
-    //             new_items.append(current_item.clone());  
-    //         } else {
-    //             found = true;  
-    //         }
-
-    //         i += 1;
-    //     };
-
-    //     if found {
-    //         self.items = new_items;
-    //     }
-
-    //     found
-    // }
-
 }
